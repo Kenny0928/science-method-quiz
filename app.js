@@ -23,7 +23,7 @@ function renderIntro() {
   root.replaceChildren();
   root.append(
     el('h2', '', '開始作答'),
-    el('p', 'muted intro-copy', '共 25 題，皆為單選。依序完成後送出，系統會計分並記錄作答；確認記錄成功後即可查看解析。')
+    el('p', 'muted intro-copy', `共 ${QUESTIONS.length} 題，皆為單選。依序完成後送出，系統會計分並記錄作答；確認記錄成功後即可查看解析。`)
   );
   const label = el('label', 'field-label', '姓名');
   label.htmlFor = 'student-name';
@@ -58,30 +58,66 @@ function chart(kind) {
   const figure = el('figure', 'chart');
   if (kind === 'scatter') {
     figure.innerHTML = `<svg viewBox="0 0 520 280" role="img" aria-labelledby="scatter-title scatter-desc">
-      <title id="scatter-title">光照時間與植株高度的散佈圖</title>
-      <desc id="scatter-desc">橫軸為每日光照時數，縱軸為植株高度。每株植物用一個獨立的點表示，點與點沒有連線。</desc>
+      <title id="scatter-title">紙張重量與紙橋最大承重的散佈圖</title>
+      <desc id="scatter-desc">橫軸為紙張重量，縱軸為最大承重。每個紙橋樣本是一個獨立的點，點與點沒有連線。</desc>
       <rect x="0" y="0" width="520" height="280" fill="#fbfcfd"/>
       <line x1="62" y1="226" x2="480" y2="226" stroke="#526574" stroke-width="2"/>
       <line x1="62" y1="226" x2="62" y2="28" stroke="#526574" stroke-width="2"/>
       <g fill="#347695">${[[105,196],[135,178],[179,186],[208,151],[252,161],[292,117],[341,126],[382,79],[436,66]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="6"/>`).join('')}</g>
-      <text x="265" y="261" text-anchor="middle">每日光照（小時）</text><text x="17" y="133" transform="rotate(-90 17 133)" text-anchor="middle">植株高度（cm）</text>
+      <text x="265" y="261" text-anchor="middle">紙張重量（g）</text><text x="17" y="133" transform="rotate(-90 17 133)" text-anchor="middle">最大承重（g）</text>
     </svg>`;
-  } else {
+  } else if (kind === 'bar') {
     const bars = [
-      { x: 92, name: '白光', value: 16, height: 160 },
-      { x: 195, name: '紅光', value: 13, height: 130 },
-      { x: 298, name: '藍光', value: 11, height: 110 },
-      { x: 401, name: '綠光', value: 7, height: 70 },
+      { x: 92, name: '甲', value: 16, height: 160 },
+      { x: 195, name: '乙', value: 13, height: 130 },
+      { x: 298, name: '丙', value: 11, height: 110 },
+      { x: 401, name: '丁', value: 7, height: 70 },
     ];
     figure.innerHTML = `<svg viewBox="0 0 520 280" role="img" aria-labelledby="bar-title bar-desc">
-      <title id="bar-title">四種光色組別的第 14 天苗高長條圖</title>
-      <desc id="bar-desc">白光 16 公分，紅光 13 公分，藍光 11 公分，綠光 7 公分。</desc>
+      <title id="bar-title">四種包裝材料的滲水量長條圖</title>
+      <desc id="bar-desc">甲 16 毫升，乙 13 毫升，丙 11 毫升，丁 7 毫升。</desc>
       <rect x="0" y="0" width="520" height="280" fill="#fbfcfd"/>
       <line x1="62" y1="220" x2="480" y2="220" stroke="#526574" stroke-width="2"/>
       <line x1="62" y1="220" x2="62" y2="28" stroke="#526574" stroke-width="2"/>
       ${[0,5,10,15].map(v => `<text x="52" y="${224-v*10}" text-anchor="end" font-size="13">${v}</text>`).join('')}
       ${bars.map(b => `<rect x="${b.x}" y="${220-b.height}" width="46" height="${b.height}" fill="#417a99"/><text x="${b.x+23}" y="${210-b.height}" text-anchor="middle" font-size="14">${b.value}</text><text x="${b.x+23}" y="243" text-anchor="middle">${b.name}</text>`).join('')}
-      <text x="17" y="130" transform="rotate(-90 17 130)" text-anchor="middle">苗高（cm）</text>
+      <text x="17" y="130" transform="rotate(-90 17 130)" text-anchor="middle">滲水量（mL）</text>
+    </svg>`;
+  } else if (kind === 'lines') {
+    figure.innerHTML = `<svg viewBox="0 0 520 280" role="img" aria-labelledby="lines-title lines-desc">
+      <title id="lines-title">兩箱相對濕度折線圖</title>
+      <desc id="lines-desc">8、10、12、14 時，甲依序為 45%、50%、55%、60%，乙依序為 60%、58%、55%、45%。12 時兩組皆為 55%。</desc>
+      <rect width="520" height="280" fill="#fbfcfd"/>
+      <line x1="68" y1="220" x2="470" y2="220" stroke="#526574" stroke-width="2"/><line x1="68" y1="220" x2="68" y2="30" stroke="#526574" stroke-width="2"/>
+      ${[45,50,55,60].map((v,i) => `<text x="56" y="${205-i*35}" text-anchor="end" font-size="13">${v}</text>`).join('')}
+      ${[8,10,12,14].map((v,i) => `<text x="${100+i*110}" y="244" text-anchor="middle" font-size="13">${v}</text>`).join('')}
+      <polyline points="100,200 210,165 320,130 430,95" fill="none" stroke="#347695" stroke-width="3"/>
+      <polyline points="100,95 210,109 320,130 430,200" fill="none" stroke="#b56a40" stroke-width="3"/>
+      <g fill="#347695">${[[100,200],[210,165],[320,130],[430,95]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5"/>`).join('')}</g>
+      <g fill="#b56a40">${[[100,95],[210,109],[320,130],[430,200]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5"/>`).join('')}</g>
+      <text x="440" y="87" fill="#347695">甲</text><text x="440" y="204" fill="#a65b34">乙</text>
+      <text x="265" y="268" text-anchor="middle">時間（時）</text><text x="18" y="133" transform="rotate(-90 18 133)" text-anchor="middle">相對濕度（%）</text>
+    </svg>`;
+  } else if (kind === 'axis') {
+    figure.innerHTML = `<svg viewBox="0 0 520 280" role="img" aria-labelledby="axis-title axis-desc">
+      <title id="axis-title">甲乙兩組分數比較長條圖，縱軸從 95 分開始</title>
+      <desc id="axis-desc">縱軸下界 95 分，上界 105 分。甲 98 分，乙 100 分。長條從 95 分起，乙柱看起來比甲柱高很多。</desc>
+      <rect width="520" height="280" fill="#fbfcfd"/>
+      <line x1="90" y1="220" x2="460" y2="220" stroke="#526574" stroke-width="2"/><line x1="90" y1="220" x2="90" y2="35" stroke="#526574" stroke-width="2"/>
+      ${[95,100,105].map((v,i)=>`<text x="77" y="${224-i*85}" text-anchor="end" font-size="14">${v}</text><line x1="84" y1="${220-i*85}" x2="90" y2="${220-i*85}" stroke="#526574"/>`).join('')}
+      <rect x="166" y="169" width="82" height="51" fill="#417a99"/><rect x="304" y="135" width="82" height="85" fill="#417a99"/>
+      <text x="207" y="158" text-anchor="middle">98</text><text x="345" y="124" text-anchor="middle">100</text>
+      <text x="207" y="245" text-anchor="middle">甲組</text><text x="345" y="245" text-anchor="middle">乙組</text>
+      <text x="30" y="130" transform="rotate(-90 30 130)" text-anchor="middle">分數</text>
+    </svg>`;
+  } else if (kind === 'relation') {
+    figure.innerHTML = `<svg viewBox="0 0 520 280" role="img" aria-labelledby="relation-title relation-desc">
+      <title id="relation-title">書包重量與肩帶壓痕深度的散佈圖</title>
+      <desc id="relation-desc">點大致從左下往右上分布，但沒有完全排成直線；圖未呈現肩帶寬度等條件。</desc>
+      <rect width="520" height="280" fill="#fbfcfd"/>
+      <line x1="70" y1="220" x2="470" y2="220" stroke="#526574" stroke-width="2"/><line x1="70" y1="220" x2="70" y2="30" stroke="#526574" stroke-width="2"/>
+      <g fill="#347695">${[[105,189],[132,196],[165,170],[192,155],[225,169],[250,130],[282,145],[316,106],[348,115],[379,80],[422,72]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="6"/>`).join('')}</g>
+      <text x="265" y="260" text-anchor="middle">書包重量（kg）</text><text x="17" y="133" transform="rotate(-90 17 133)" text-anchor="middle">壓痕深度（mm）</text>
     </svg>`;
   }
   figure.append(el('figcaption', '', '教學用虛擬數據'));

@@ -29,8 +29,8 @@ function doPost(e) {
       QUESTION_IDS.forEach(id => {
         const item = data.answers[id];
         const choice = String(item && item.choice || '');
-        const optionText = String(item && item.text || '');
-        if (!/^[A-D]$/.test(choice) || !optionText || optionText.length > 220) throw new Error(id + ' 的答案格式不正確');
+        const optionText = answerKey[id].options['ABCD'.indexOf(choice)];
+        if (!/^[A-D]$/.test(choice) || !optionText) throw new Error(id + ' 的答案格式不正確');
         if (choice === answerKey[id].answer) score++;
         selected.push(choice + '｜' + safeCell_(optionText));
       });
@@ -106,7 +106,7 @@ function getAnswerKey_() {
     const id = String(row[0]);
     const answer = String(row[9]);
     if (!QUESTION_IDS.includes(id) || !/^[A-D]$/.test(answer) || key[id]) throw new Error('題目對照表格式不正確');
-    key[id] = { answer: answer, explanation: String(row[10]) };
+    key[id] = { answer: answer, explanation: String(row[10]), options: row.slice(5, 9).map(String) };
   });
   if (Object.keys(key).length !== QUESTION_IDS.length) throw new Error('題目對照表題數不正確');
   return key;

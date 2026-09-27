@@ -2,6 +2,7 @@
 // 部署設定：執行身分「我」、存取權「所有人」。
 const QUIZ_VERSION = '2026-09-b';
 const QUESTION_IDS = Array.from({length: 30}, (_, i) => 'Q' + String(i + 1).padStart(2, '0'));
+const SPREADSHEET_ID = '1PbtVjQSYyRx6uGakwL3LGss87p9z6VkyY_Xt9-qKPiU';
 const RESPONSE_SHEET = '作答紀錄';
 const KEY_SHEET = '題目對照';
 
@@ -85,7 +86,7 @@ function doGet(e) {
 }
 
 function getResponseSheet_() {
-  const book = SpreadsheetApp.getActiveSpreadsheet();
+  const book = SpreadsheetApp.openById(SPREADSHEET_ID);
   if (!book) throw new Error('找不到綁定的 Google Sheet');
   let sheet = book.getSheetByName(RESPONSE_SHEET);
   if (!sheet) sheet = book.insertSheet(RESPONSE_SHEET);
@@ -97,7 +98,7 @@ function getResponseSheet_() {
 }
 
 function getAnswerKey_() {
-  const book = SpreadsheetApp.getActiveSpreadsheet();
+  const book = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = book && book.getSheetByName(KEY_SHEET);
   if (!sheet || sheet.getLastRow() < QUESTION_IDS.length + 1) throw new Error('題目對照表不完整');
   const rows = sheet.getRange(2, 1, QUESTION_IDS.length, 11).getValues();

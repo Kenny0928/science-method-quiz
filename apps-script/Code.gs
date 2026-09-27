@@ -1,7 +1,7 @@
 // 將產生後的 Code.gs 貼到「成績表 → 擴充功能 → Apps Script」。
 // 部署設定：執行身分「我」、存取權「所有人」。
-const QUIZ_VERSION = '2026-09-a';
-const QUESTION_IDS = Array.from({length: 25}, (_, i) => 'Q' + String(i + 1).padStart(2, '0'));
+const QUIZ_VERSION = '2026-09-b';
+const QUESTION_IDS = Array.from({length: 30}, (_, i) => 'Q' + String(i + 1).padStart(2, '0'));
 const RESPONSE_SHEET = '作答紀錄';
 const KEY_SHEET = '題目對照';
 
@@ -99,8 +99,8 @@ function getResponseSheet_() {
 function getAnswerKey_() {
   const book = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = book && book.getSheetByName(KEY_SHEET);
-  if (!sheet || sheet.getLastRow() < 26) throw new Error('題目對照表不完整');
-  const rows = sheet.getRange(2, 1, 25, 11).getValues();
+  if (!sheet || sheet.getLastRow() < QUESTION_IDS.length + 1) throw new Error('題目對照表不完整');
+  const rows = sheet.getRange(2, 1, QUESTION_IDS.length, 11).getValues();
   const key = {};
   rows.forEach(row => {
     const id = String(row[0]);
